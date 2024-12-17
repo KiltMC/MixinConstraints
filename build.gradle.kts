@@ -1,15 +1,11 @@
-import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     java
     idea
-    id("com.vanniktech.maven.publish") version("0.28.0") // `maven-publish` doesn't support new maven central
+    id("maven-publish")
 }
 
-version = "1.0.2"
-group = "com.moulberry.mixinconstraints"
+version = "1.0.3"
+group = "xyz.bluspring.kiltmc.mixinconstraints"
 
 idea.module.isDownloadSources = true
 
@@ -17,6 +13,9 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -30,13 +29,13 @@ val fabric: SourceSet by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output
 }
 
-val forge: SourceSet by sourceSets.creating {
+/*val forge: SourceSet by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output
 }
 
 val neoforge: SourceSet by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output
-}
+}*/
 
 dependencies {
     implementation("org.spongepowered:mixin:0.8.5")
@@ -45,17 +44,12 @@ dependencies {
     implementation("org.jetbrains:annotations:24.1.0")
 
     "fabricImplementation"("net.fabricmc:fabric-loader:0.15.0")
-
-    "forgeImplementation"("net.minecraftforge:fmlloader:1.20.6-50.1.0")
-    "forgeImplementation"("net.minecraftforge:fmlcore:1.20.6-50.1.0")
-
-    "neoforgeImplementation"("net.neoforged.fancymodloader:loader:3.0.45")
 }
 
 tasks.jar {
     from(fabric.output)
-    from(forge.output)
-    from(neoforge.output)
+    //from(forge.output)
+    //from(neoforge.output)
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -66,56 +60,20 @@ tasks.register<Jar>("sourcesJar") {
     }
 }
 
-mavenPublishing {
-    configure(JavaLibrary(JavadocJar.Javadoc(), true))
-
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
-    signAllPublications()
-
-    coordinates("com.moulberry", "mixinconstraints", version.toString())
-
-    pom {
-        name = "MixinConstraints"
-        description = "Library to enable/disable mixins using annotations"
-        url = "https://github.com/Moulberry/MixinConstraints"
-        inceptionYear = "2024"
-        packaging = "jar"
-
-        licenses {
-            license {
-                name = "MIT License"
-                url = "https://opensource.org/license/mit"
-            }
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            groupId = "xyz.bluspring.kiltmc"
+            artifactId = "MixinConstraints"
         }
-
-        developers {
-            developer {
-                name = "Moulberry"
-                url = "https://github.com/Moulberry"
+    }
+    repositories {
+        maven {
+            url = uri("https://mvn.devos.one/snapshots")
+            credentials {
+                username = System.getenv()["MAVEN_USER"]
+                password = System.getenv()["MAVEN_PASS"]
             }
-        }
-
-        contributors {
-            contributor {
-                name = "rdh"
-                url = "https://github.com/rhysdh540"
-            }
-            contributor {
-                name = "IThundxr"
-                url = "https://ithundxr.dev"
-            }
-        }
-
-        issueManagement {
-            system = "GitHub"
-            url = "https://github.com/Moulberry/MixinConstraints/issues"
-        }
-
-        scm {
-            url = "https://github.com/Moulberry/MixinConstraints/"
-            connection = "scm:git:git://github.com/Moulberry/MixinConstraints.git"
-            developerConnection = "scm:git:ssh://git@github.com/Moulberry/MixinConstraints.git"
         }
     }
 }

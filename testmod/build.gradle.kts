@@ -1,5 +1,4 @@
 import xyz.wagyourtail.unimined.api.unimined
-import xyz.wagyourtail.unimined.util.OSUtils
 
 plugins {
     java
@@ -16,12 +15,16 @@ val fabric: SourceSet by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output
 }
 
-val forge: SourceSet by sourceSets.creating {
+/*val forge: SourceSet by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output
 }
 
 val neoforge: SourceSet by sourceSets.creating {
     compileClasspath += sourceSets.main.get().output
+}*/
+
+repositories {
+    maven("https://repo.spongepowered.org/maven")
 }
 
 dependencies {
@@ -62,7 +65,7 @@ unimined.minecraft(fabric) {
     runs.off = false
 }
 
-unimined.minecraft(forge) {
+/*unimined.minecraft(forge) {
     combineWith(sourceSets["main"])
     combineWith(rootProject.sourceSets["forge"])
 
@@ -108,4 +111,4 @@ unimined.minecraft(neoforge) {
             }
         }
     }
-}
+}*/
